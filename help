@@ -1,1 +1,5 @@
-oh god wwhat am i doing
+function main() {
+  console.log("you SUCK.");
+}
+
+main();
