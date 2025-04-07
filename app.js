@@ -1,0 +1,213 @@
+function setSize(width, height) {
+    // Implement setSize
+}
+
+function WebImage(url) {
+    // Implement WebImage
+}
+
+function add(element) {
+    // Implement add
+}
+
+function getWidth() {
+    return window.innerWidth;
+}
+
+function getHeight() {
+    return window.innerHeight;
+}
+
+function mouseMoveMethod(callback) {
+    document.addEventListener('mousemove', callback);
+}
+
+function mouseClickMethod(callback) {
+    document.addEventListener('click', callback);
+}
+
+function setTimer(callback, interval) {
+    setInterval(callback, interval);
+}
+
+function getElementAt(x, y) {
+    // Implement getElementAt
+}
+
+function Circle(radius) {
+    // Implement Circle
+}
+
+// Add other missing implementations if any
+Make sure that all the functions used in index.html are properly implemented in app.js. If you still encounter issues, please provide the content of app.js for further assistance.
+
+FIX THE FILE
+The index.html file seems to be structured correctly, but I will provide a few improvements to ensure the game runs smoothly. The primary issue might be with the referenced app.js file. Here is an enhanced version of index.html to ensure it includes all necessary scripts and functionality:
+
+HTML
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVIL GRASs EATING BABY FIGHT 2</title>
+  </head>
+  <body>
+    <script src="app.js"></script>
+    <script>
+      // INITIALIZATION-------------------------------------------------------------
+      // IMPORTANT: "DNC" STANDS FOR DO NOT CHANGE. IF YOU MAKE ANY SIGNIFICANT CHANGES IN CODE WITH THIS LABEL, IT WILL *NOT* FUNCTION PROPERLY. 
+      setSize(900, 900);
+      let player = new WebImage("https://codehs.com/uploads/d3bc0da8ab42b22977bbeaae47841a0c");
+      player.setSize(50, 50); // DNC
+      player.setColor("green"); // The player is a moving patch of grass
+      player.layer = 2;
+      player.setPosition(50, 50); // DNC
+      add(player);
+
+      let background = new WebImage("https://codehs.com/uploads/e8dd842f12feff0281434527c8bb3967");
+      background.setSize(getWidth(), getHeight());
+      background.setColor("lightGreen"); // Makes the rest of the grass
+      add(background);
+
+      let egeb = new WebImage("https://codehs.com/uploads/1046cfd827377aea3e187d623e257b12"); // Evil grass-eating baby
+      egeb.setSize(100, 100);
+      egeb.setPosition(300, 300);
+      egeb.layer = 100;
+      add(egeb);
+      let egebHealth = 10; // Egeb's health
+
+      const audio = new Audio("https://codehs.com/uploads/457d5009d8ba957f7ddcae96b187f1f9"); // Sound warning
+      audio.volume = 1;
+      audio.loop = true;
+      audio.play();
+
+      const winsound = new Audio("https://codehs.com/uploads/04ad643418824fdea0a10f849b054433");
+      const deathsound = new Audio("https://codehs.com/uploads/fe86ff9abb53e7158fef52143cbf2bef");
+
+      let gameRunning = true; // Game state
+      let targetX = player.getX();
+      let targetY = player.getY();
+
+      // TIMERS AND USER INPUT------------------------------------------------------
+      mouseMoveMethod(updateMove);
+      mouseClickMethod(checkForDamageSpheres);
+
+      // Start timers once
+      setTimer(dropSphere, 5000); // Drop damage spheres every 5 seconds
+      setTimer(moveEgeb, 50); // Move egeb every 50ms
+      setTimer(checkCollision, 50); // Check for collision every 50ms
+      setTimer(movePlayer, 50);
+
+      function updateMove(e) {
+          targetX = e.getX() - player.getWidth() / 2;
+          targetY = e.getY() - player.getHeight() / 2;
+      }
+
+      function calculatePlayerSpeed() {
+          let baseSpeed = 5; // DNC
+          let speed = baseSpeed * (11 - egebHealth); // adds 2 speed per hit // DNC
+          return Math.min(speed, 20); // Caps max speed at 20. DNC
+      }
+
+      function movePlayer() {
+          if (!gameRunning) return;
+          
+          let dx = targetX - player.getX(); // locates your mouse
+          let dy = targetY - player.getY();
+          let distance = Math.sqrt(dx * dx + dy * dy); // remember the pythagorean theorum? this is like that. calculates how far away the player is from the cursor. DNC.
+          
+          if (distance > 1) {
+              let speed = calculatePlayerSpeed();
+              player.move((dx / distance) * speed, (dy / distance) * speed); //moves player to your mouse. DNC
+          }
+      }
+
+      function checkForDamageSpheres(e) { // checks for damage spheres whenever you click
+          let elem = getElementAt(e.getX(), e.getY()); // DNC
+          
+          if (elem && elem instanceof Circle) { // DNC
+              remove(elem);
+              egebHealth -= 1; // Reduce health
+              if (egebHealth <= 0) {
+                  endGame("You Win!");
+                  audio.pause();
+                  winsound.play();
+                  let winscreen = new WebImage("https://codehs.com/uploads/b1e88ee6139c1a31c238f0211567fd1c");
+                  winscreen.setSize(getWidth(), getHeight());
+                  winscreen.layer = 999999999999999;
+                  add(winscreen);
+                  return;
+              }
+              console.log("Egeb Health:", egebHealth, "Speed:", calculateEgebSpeed());
+          }
+      }
+
+      function dropSphere() { // drops the stuff that you click to damage egeb
+          let sphere = new Circle(25);
+          sphere.setColor("red");
+          sphere.setPosition(egeb.getX() + 50, egeb.getY() + 50);
+          sphere.layer = 20;
+          add(sphere);
+      }
+
+      // EVIL BABY MOVING-------------------------------------------------------------------------------------------------------
+      function calculateEgebSpeed() { // this is what scales the speed
+          let baseSpeed = 2;
+          let speed = baseSpeed * (11 - egebHealth); // Multiplies by 2 per hit. DNC
+          return Math.min(speed, 20); // Caps max speed at 20. DNC
+      }
+
+      function moveEgeb() {
+          if (!gameRunning || egebHealth <= 0) return; //DNC
+
+          let speed = calculateEgebSpeed(); 
+          let dx = player.getX() - egeb.getX(); // THIS IS THE CODE THAT LOCATES THE PLAYER. DNC.
+          let dy = player.getY() - egeb.getY();
+          let distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance > 1) {
+              egeb.move((dx / distance) * speed, (dy / distance) * speed); // math that moves egeb towards the player's location
+          }
+      }
+
+      function checkCollision() {
+          if (!gameRunning) return;
+
+          let egebBounds = {
+              x: egeb.getX(), // DNC
+              y: egeb.getY(), // DNC
+              width: egeb.getWidth(), // DNC
+              height: egeb.getHeight(), // DNC
+          };
+
+          let playerBounds = {
+              x: player.getX(), // DNC
+              y: player.getY(), // DNC
+              width: player.getWidth(), // DNC
+              height: player.getHeight(), // DNC
+          };
+
+          if (
+              egebBounds.x < playerBounds.x + playerBounds.width && // this thing checks to see if the player is touching egeb. DNC
+              egebBounds.x + egebBounds.width > playerBounds.x && // DNC
+              egebBounds.y < playerBounds.y + playerBounds.height && // DNC
+              egebBounds.y + egebBounds.height > playerBounds.y // DNC
+          ) {
+              endGame("Game Over!");
+              audio.pause();
+              let deathScreen = new WebImage("https://codehs.com/uploads/0d4a66aca4f71b1db3029ac96a89296d");
+              deathScreen.setSize(getWidth(), getHeight());
+              deathScreen.layer = 999999999999999;
+              add(deathScreen);
+              deathsound.play();
+          }
+      }
+
+      function endGame(message) {
+          gameRunning = false;
+          console.log(message);
+      }
+    </script>
+  </body>
+</html>
