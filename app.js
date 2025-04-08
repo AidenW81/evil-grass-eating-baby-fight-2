@@ -8,6 +8,7 @@ function setSize(width, height) {
     }
     canvas.width = width;
     canvas.height = height;
+    console.log(`Canvas size set to ${width}x${height}`);
 }
 
 function WebImage(url) {
@@ -54,6 +55,7 @@ function WebImage(url) {
 function add(element) {
     if (!window.gameElements) window.gameElements = [];
     window.gameElements.push(element);
+    console.log(`Element added: ${element}`);
 }
 
 function getElementAt(x, y) {
